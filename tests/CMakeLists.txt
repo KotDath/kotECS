@@ -1,6 +1,8 @@
 # Create test executable
 add_executable(kotECS_tests
     ComponentStorageTest.cpp
+    FilterTest.cpp
+    SystemTest.cpp
 )
 
 # Link test executable with Google Test and the header-only library

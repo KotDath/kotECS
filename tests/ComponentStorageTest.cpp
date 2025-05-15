@@ -27,10 +27,10 @@ TYPED_TEST(ComponentStorageTest, AddAndHas) {
   EXPECT_EQ(this->storage.Count(), 1);
 }
 
-TYPED_TEST(ComponentStorageTest, AddAndRef) {
+TYPED_TEST(ComponentStorageTest, AddAndGet) {
   TypeParam value{};
   this->storage.Add(1, value);
-  EXPECT_EQ(this->storage.Ref(1), value);
+  EXPECT_EQ(this->storage.Get(1), value);
 }
 
 TYPED_TEST(ComponentStorageTest, Remove) {

@@ -22,17 +22,24 @@ class KotIterator {
   inline KotIterator(
       size_t current,
       const std::vector<std::shared_ptr<BaseComponentStorage>> &storages,
-      std::span<const int> minStorageEntities, size_t minStorageIndex)
+      const std::vector<std::shared_ptr<BaseComponentStorage>>
+          &excludedStorages,
+      std::span<const int> minStorageEntities, size_t minStorageIndex,
+      bool isReversed = false)
       : _storages(storages),
+        _excludedStorages(excludedStorages),
         _current(current),
         _minStorageEntities(minStorageEntities),
         _minStorageIndex(minStorageIndex),
         _currentEntity(-1) {
     for (const auto &entity : minStorageEntities) {
       _currentEntity = entity;
-      if (HasAllComponents()) {
-        _currentEntity = entity;
+      if (HasAllComponents() && !HasExcludedComponents()) {
         break;
+      }
+
+      if (_current < minStorageEntities.size()) {
+        ++_current;
       }
     }
   }
@@ -40,8 +47,9 @@ class KotIterator {
   inline KotIterator &operator++() {
     while (++_current < _minStorageEntities.size()) {
       _currentEntity = _minStorageEntities[_current];
-      if (HasAllComponents())
+      if (HasAllComponents() && !HasExcludedComponents()) {
         break;
+      }
     }
     return *this;
   }
@@ -51,6 +59,7 @@ class KotIterator {
  private:
   const std::span<const int> _minStorageEntities;
   const std::vector<std::shared_ptr<BaseComponentStorage>> &_storages;
+  const std::vector<std::shared_ptr<BaseComponentStorage>> &_excludedStorages;
   const size_t _minStorageIndex;
   int _currentEntity;
   size_t _current;
@@ -66,5 +75,14 @@ class KotIterator {
       }
     }
     return true;
+  }
+
+  inline bool HasExcludedComponents() const {
+    for (const auto &storage : _excludedStorages) {
+      if (storage->Has(_currentEntity)) {
+        return true;
+      }
+    }
+    return false;
   }
 };

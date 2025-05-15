@@ -22,6 +22,17 @@ target_include_directories(${PROJECT_NAME}
 # Create an alias target for better usage in other projects
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
+# Add main executable
+add_executable(kotECS_example
+    src/main.cpp
+)
+
+# Link the executable with the interface library
+target_link_libraries(kotECS_example
+    PRIVATE
+        ${PROJECT_NAME}
+)
+
 # Option to enable or disable tests
 option(BUILD_TESTING "Build the testing tree" ON)
 

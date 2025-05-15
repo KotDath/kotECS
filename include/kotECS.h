@@ -15,6 +15,6 @@
 #include "ecs/KotIterator.h"
 
 // Systems management
-#include "ecs/BaseInitializer.h"
-#include "ecs/BaseSystem.h"
+#include "ecs/IInitializer.h"
+#include "ecs/ISystem.h"
 #include "ecs/SystemManager.h"

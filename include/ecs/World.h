@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "BaseEntity.h"
 #include "ComponentStorage.h"
 #include "EntityId.h"
 
@@ -12,6 +13,8 @@ class World {
   inline World() {
     _entities.reserve(DefaultEntitiesCapacity);
     _freeEntities.reserve(DefaultEntitiesCapacity);
+    // Initialize BaseEntity storage
+    GetRawStorage<BaseEntity>();
   }
 
   inline int CreateEntity() {
@@ -24,6 +27,11 @@ class World {
       entityId = _entities.size();
       _entities.emplace_back(entityId, 1);
     }
+
+    // Add BaseEntity component to the new entity
+    GetStorage<BaseEntity>().Add(
+        entityId, BaseEntity{"Entity_" + std::to_string(entityId)});
+
     return entityId;
   }
 

@@ -39,10 +39,11 @@ class World {
     auto& entity = _entities[ent];
     if (entity.IsRemoved())
       return;
-    const auto& components = entity.Components();
-    if (!components.empty()) {
-      for (int i = components.size() - 1; i >= 0; i--)
-        _componentStorages[components[i]]->Remove(ent);
+    const auto& componentHashes = entity.ComponentHashes();
+    if (!componentHashes.empty()) {
+      for (const auto& hash : componentHashes) {
+        _componentStoragesHash[hash]->Remove(ent);
+      }
     } else {
       entity.Remove();
       _freeEntities.push_back(entity.Id);
@@ -62,13 +63,14 @@ class World {
            entity.Id < _entities.size() && e == entity.Id;
   }
 
-  inline void EntityComponentsChanged(const int ent, const int storageId,
+  inline void EntityComponentsChanged(const int ent, const size_t typeHash,
                                       const bool added) {
     auto& entity = _entities[ent];
+    
     if (added) {
-      entity.AddComponent(storageId);
+      entity.AddComponent(typeHash);
     } else {
-      const int newComponentsCount = entity.RemoveComponent(storageId);
+      const int newComponentsCount = entity.RemoveComponent(typeHash);
       if (newComponentsCount == 0) {
         RemoveEntity(ent);
       }
@@ -83,7 +85,13 @@ class World {
       return std::static_pointer_cast<ComponentStorage<T>>(
           foundStorageIterator->second);
     int storagesCount = _componentStorages.size();
-    auto storage = std::make_shared<ComponentStorage<T>>();
+        
+    // Create callback for component changes
+    auto callback = [this](int entityId, size_t typeHash, bool added) {
+      this->EntityComponentsChanged(entityId, typeHash, added);
+    };
+    
+    auto storage = std::make_shared<ComponentStorage<T>>(callback);
     storagesCount++;
     _componentStoragesHash.insert({typeHash, storage});
     if (storagesCount == _componentStorages.capacity()) {

@@ -6,7 +6,7 @@
 template <typename T>
 class ComponentStorageTest : public ::testing::Test {
  protected:
-  ComponentStorage<T> storage;
+  ComponentStorage<T> storage{nullptr};
 };
 
 // Test with different types
@@ -80,14 +80,14 @@ TYPED_TEST(ComponentStorageTest, Entities) {
 
 // Specific type tests
 TEST(ComponentStorageIntTest, ValueModification) {
-  ComponentStorage<int> storage;
+  ComponentStorage<int> storage{nullptr};
   storage.Add(1, 42);
   storage.Get(1) = 100;
   EXPECT_EQ(storage.Get(1), 100);
 }
 
 TEST(ComponentStorageStringTest, StringOperations) {
-  ComponentStorage<std::string> storage;
+  ComponentStorage<std::string> storage{nullptr};
   storage.Add(1, "hello");
   storage.Add(2, "world");
 
@@ -100,14 +100,14 @@ TEST(ComponentStorageStringTest, StringOperations) {
 
 // Edge cases
 TEST(ComponentStorageEdgeCases, LargeEntityIds) {
-  ComponentStorage<int> storage;
+  ComponentStorage<int> storage{nullptr};
   storage.Add(1000, 42);
   EXPECT_TRUE(storage.Has(1000));
   EXPECT_EQ(storage.Get(1000), 42);
 }
 
 TEST(ComponentStorageEdgeCases, RemoveNonExistent) {
-  ComponentStorage<int> storage;
+  ComponentStorage<int> storage{nullptr};
   storage.Add(1, 42);
   storage.Remove(2);  // Should not crash
   EXPECT_TRUE(storage.Has(1));
@@ -115,13 +115,13 @@ TEST(ComponentStorageEdgeCases, RemoveNonExistent) {
 }
 
 TEST(ComponentStorageEdgeCases, RefNonExistent) {
-  ComponentStorage<int> storage;
+  ComponentStorage<int> storage{nullptr};
   EXPECT_THROW(storage.Get(1), std::out_of_range);
 }
 
 // Stream output tests
 TEST(ComponentStorageStreamTest, IntOutput) {
-  ComponentStorage<int> storage;
+  ComponentStorage<int> storage{nullptr};
   storage.Add(1, 42);
   storage.Add(2, 100);
 
@@ -149,7 +149,7 @@ struct TestComponent {
 };
 
 TEST(ComponentStorageCustomTypeTest, CustomTypeOperations) {
-  ComponentStorage<TestComponent> storage;
+  ComponentStorage<TestComponent> storage{nullptr};
   TestComponent tc{42, 3.14f};
 
   storage.Add(1, tc);

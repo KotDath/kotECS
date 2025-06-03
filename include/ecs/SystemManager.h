@@ -18,6 +18,7 @@ class SystemManager {
 
   SystemManager& AddSystem(std::shared_ptr<ISystem> system) {
     _systems.push_back(system);
+    _newInitializers.push_back(system);
     return *this;
   }
 

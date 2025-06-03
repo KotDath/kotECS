@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <iostream>
 #include <span>
 #include <type_traits>
@@ -8,10 +9,17 @@
 
 #include "BaseComponentStorage.h"
 
+// Forward declaration
+class World;
+
 template <typename T>
 class ComponentStorage : public BaseComponentStorage {
  public:
-  ComponentStorage() { Resize(64, 64); }
+  using ComponentChangeCallback = std::function<void(int entityId, size_t typeHash, bool added)>;
+
+  ComponentStorage(ComponentChangeCallback callback) : _onComponentChange(callback) { 
+    Resize(64, 64); 
+  }
 
   bool Has(const int entityIid) const override {
     return entityIid < _sparse.size() && _sparse[entityIid] != -1;
@@ -31,6 +39,10 @@ class ComponentStorage : public BaseComponentStorage {
     _dense[_count] = entityIid;
     _sparse[entityIid] = _count;
     _count++;
+
+    if (_onComponentChange) {
+      _onComponentChange(entityIid, typeid(T).hash_code(), true);
+    }
   }
 
   void Remove(const int entityIid) override {
@@ -43,6 +55,10 @@ class ComponentStorage : public BaseComponentStorage {
     _dense[arrayIndex] = lastEntityIid;
     _sparse[lastEntityIid] = arrayIndex;
     _sparse[entityIid] = -1;
+
+    if (_onComponentChange) {
+      _onComponentChange(entityIid, typeid(T).hash_code(), false);
+    }
   }
 
   const std::span<const T> All() const {
@@ -63,6 +79,7 @@ class ComponentStorage : public BaseComponentStorage {
   std::vector<T> _data;
   std::vector<int> _sparse;
   std::vector<int> _dense;
+  ComponentChangeCallback _onComponentChange;
 
   int _count = 0;
 

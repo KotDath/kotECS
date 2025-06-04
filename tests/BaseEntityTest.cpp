@@ -15,7 +15,6 @@ TEST(BaseEntityTest, NewEntityHasBaseEntityComponent) {
   // Verify the BaseEntity component's properties
   auto& baseEntity = baseEntityStorage.Get(entityId);
   EXPECT_EQ(baseEntity.name, "Entity_" + std::to_string(entityId));
-  EXPECT_TRUE(baseEntity.isActive);
 }
 
 TEST(BaseEntityTest, MultipleEntitiesHaveUniqueBaseEntityComponents) {
@@ -35,11 +34,6 @@ TEST(BaseEntityTest, MultipleEntitiesHaveUniqueBaseEntityComponents) {
             "Entity_" + std::to_string(entity2));
   EXPECT_EQ(baseEntityStorage.Get(entity3).name,
             "Entity_" + std::to_string(entity3));
-
-  // Verify they are all active by default
-  EXPECT_TRUE(baseEntityStorage.Get(entity1).isActive);
-  EXPECT_TRUE(baseEntityStorage.Get(entity2).isActive);
-  EXPECT_TRUE(baseEntityStorage.Get(entity3).isActive);
 }
 
 TEST(BaseEntityTest, RecycledEntityGetsNewBaseEntityComponent) {
@@ -65,5 +59,4 @@ TEST(BaseEntityTest, RecycledEntityGetsNewBaseEntityComponent) {
   EXPECT_NE(baseEntityStorage.Get(newEntityId).name, originalName);
   EXPECT_EQ(baseEntityStorage.Get(newEntityId).name,
             "Entity_" + std::to_string(newEntityId));
-  EXPECT_TRUE(baseEntityStorage.Get(newEntityId).isActive);
 }

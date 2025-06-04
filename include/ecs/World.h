@@ -40,14 +40,12 @@ class World {
     if (entity.IsRemoved())
       return;
     const auto& componentHashes = entity.ComponentHashes();
-    if (!componentHashes.empty()) {
-      for (const auto& hash : componentHashes) {
+    for (const auto& hash : componentHashes) {
         _componentStoragesHash[hash]->Remove(ent);
       }
-    } else {
-      entity.Remove();
-      _freeEntities.push_back(entity.Id);
-    }
+    entity.Remove();
+    _freeEntities.push_back(entity.Id);
+    
   }
 
   inline EntityId GetPackedEntity(int e) const { return _entities[e]; }

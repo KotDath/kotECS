@@ -36,6 +36,9 @@ class SystemManager {
     for (int i = 0; i < _systems.size(); i++) {
       _systems[i]->OnUpdate();
     }
+
+    auto movementStorage = _world.GetStorage<C_Asteroid>();
+    std::cout << "Movement storage: " << movementStorage << std::endl;
   }
 
  private:

@@ -33,6 +33,14 @@ class ComponentStorage : public BaseComponentStorage {
   }
 
   void Add(const int entityIid, const T& value) {
+    if (Has(entityIid)) {
+      std::cerr << "Warning: Attempting to add duplicate component " 
+                << typeid(T).name() << " to entity " << entityIid 
+                << ". Overwriting existing component." << std::endl;
+      _data[_sparse[entityIid]] = value;
+      return;
+    }
+    
     Resize((entityIid / 64 + 1) * 64,
            _data.size() == _count + 1 ? _data.size() + 64 : _data.size());
     _data[_count] = value;
@@ -102,12 +110,38 @@ class ComponentStorage : public BaseComponentStorage {
 // Implementation of stream output operator
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const ComponentStorage<T>& storage) {
+  // os << "ComponentStorage<" << typeid(T).name() << "> [";
+  // for (int i = 0; i < storage._count; ++i) {
+  //   if (i > 0)
+  //     os << ", ";
+  //   os << "Entity " << storage._dense[i] << ": " << storage._data[i];
+  // }
+  // os << "]";
+
   os << "ComponentStorage<" << typeid(T).name() << "> [";
-  for (int i = 0; i < storage._count; ++i) {
-    if (i > 0)
-      os << ", ";
-    os << "Entity " << storage._dense[i] << ": " << storage._data[i];
+  
+  os << "Sparse: [";
+  for (size_t i = 0; i < storage._sparse.size(); ++i) {
+    if (i > 0) os << ", ";
+    os << storage._sparse[i];
   }
-  os << "]";
+  os << "], ";
+  
+  os << "Dense: [";
+  for (int i = 0; i < storage._count; ++i) {
+    if (i > 0) os << ", ";
+    os << storage._dense[i];
+  }
+  os << "], ";
+  
+  os << "Count: " << storage._count << ", ";
+  
+  os << "Data: [";
+  for (int i = 0; i < storage._count; ++i) {
+    if (i > 0) os << ", ";
+    os << storage._data[i];
+  }
+  os << "]]";
+  
   return os;
 }

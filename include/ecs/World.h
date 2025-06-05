@@ -39,7 +39,7 @@ class World {
     auto& entity = _entities[ent];
     if (entity.IsRemoved())
       return;
-    const auto& componentHashes = entity.ComponentHashes();
+    const auto componentHashes = entity.ComponentHashes();
     for (const auto& hash : componentHashes) {
         _componentStoragesHash[hash]->Remove(ent);
       }
